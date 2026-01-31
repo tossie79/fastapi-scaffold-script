@@ -4,6 +4,9 @@ set -e
 
 read -p "Enter project name: " PROJECT_NAME
 
+# Create project outside the script folder
+PROJECT_ROOT="$(dirname "$PWD")/$PROJECT_NAME"
+
 echo "Should the SQLAlchemy setup be async? (y/n): "
 read ASYNC_CHOICE
 
@@ -65,30 +68,30 @@ if __name__ == '__main__':
 fi
 
 # Create project structure
-mkdir -p "$PROJECT_NAME"/app/api/v1/dependencies
-mkdir -p "$PROJECT_NAME"/app/api/v1/routes
-mkdir -p "$PROJECT_NAME"/app/core
-mkdir -p "$PROJECT_NAME"/app/domain/repository
-mkdir -p "$PROJECT_NAME"/app/infrastructure/database/schemas
-mkdir -p "$PROJECT_NAME"/app/infrastructure/database/models
-mkdir -p "$PROJECT_NAME"/app/infrastructure/database/repository
-mkdir -p "$PROJECT_NAME"/app/services
-mkdir -p "$PROJECT_NAME"/tests
+mkdir -p "$PROJECT_ROOT"/app/api/v1/dependencies
+mkdir -p "$PROJECT_ROOT"/app/api/v1/routes
+mkdir -p "$PROJECT_ROOT"/app/core
+mkdir -p "$PROJECT_ROOT"/app/domain/entities
+mkdir -p "$PROJECT_ROOT"/app/domain/repositories
+mkdir -p "$PROJECT_ROOT"/app/infrastructure/database/schemas
+mkdir -p "$PROJECT_ROOT"/app/infrastructure/database/models
+mkdir -p "$PROJECT_ROOT"/app/infrastructure/database/repositories
+mkdir -p "$PROJECT_ROOT"/app/services
+mkdir -p "$PROJECT_ROOT"/tests
 
 # Scalability/reliability folders
-mkdir -p "$PROJECT_NAME"/app/authentication
-mkdir -p "$PROJECT_NAME"/app/authorization
-mkdir -p "$PROJECT_NAME"/app/ratelimiting
-mkdir -p "$PROJECT_NAME"/app/caching
+mkdir -p "$PROJECT_ROOT"/app/authentication
+mkdir -p "$PROJECT_ROOT"/app/authorization
+mkdir -p "$PROJECT_ROOT"/app/ratelimiting
+mkdir -p "$PROJECT_ROOT"/app/caching
 
-cd "$PROJECT_NAME"
+cd "$PROJECT_ROOT"
 
 # Set local Python version with pyenv
+echo "3.11.0" > .python-version
 pyenv local 3.11.0
 
 # Create virtual environment using pyenv's python
-#VENV_NAME="venv_${PROJECT_NAME,,}"
-# Convert project name to lowercase and snake_case for venv
 VENV_NAME="venv_$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/_/g')"
 pyenv exec python -m venv "$VENV_NAME"
 source "$VENV_NAME/bin/activate"
@@ -407,7 +410,7 @@ touch app/infrastructure/database/schemas/__init__.py
 # Example DB model
 cat > app/infrastructure/database/models/example.py <<EOF
 from sqlalchemy import Column, Integer, String
-from app.domain.repository.base import Base
+from app.domain.repositories.base import Base
 
 class Example(Base):
     __tablename__ = "examples"
@@ -418,20 +421,21 @@ EOF
 touch app/infrastructure/database/models/__init__.py
 
 # Example repository
-cat > app/infrastructure/database/repository/example_repository.py <<EOF
+cat > app/infrastructure/database/repositories/example_repository.py <<EOF
 # Example repository implementation for Example model
 EOF
 
-touch app/infrastructure/database/repository/__init__.py
+touch app/infrastructure/database/repositories/__init__.py
 
 # Repository base in domain
-cat > app/domain/repository/base.py <<EOF
+cat > app/domain/repositories/base.py <<EOF
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 EOF
 
-touch app/domain/repository/__init__.py
+touch app/domain/repositories/__init__.py
+touch app/domain/entities/__init__.py
 touch app/services/__init__.py
 
 # Database session with logging
@@ -443,7 +447,7 @@ import logging
 logger = logging.getLogger(__name__)
 $SESSION_IMPORT
 from sqlalchemy import create_engine
-from app.domain.repository.base import Base
+from app.domain.repositories.base import Base
 $SESSION_CODE
 EOF
 
@@ -616,14 +620,14 @@ curl http://localhost:8000/api/v1/health
 │   │   ├── logging.py
 │   │   ├── settings.py
 │   ├── domain/
-│   │   └── repository/
+│   │   └── repositories/
 │   │       └── base.py
 │   ├── infrastructure/
 │   │   └── database/
 │   │       ├── create_tables.py
 │   │       ├── models/
 │   │       │   └── example.py
-│   │       ├── repository/
+│   │       ├── repositories/
 │   │       │   └── example_repository.py
 │   │       ├── schemas/
 │   │       │   └── example.py
@@ -648,10 +652,10 @@ curl http://localhost:8000/api/v1/health
 - \`api/v1/routes\`: Contains endpoint files for API version 1.
 - \`api/v1/routes.py\`: Main router for API v1.
 - \`core\`: Core settings, logging, constants, and DB engine setup.
-- \`domain/repository\`: Repository base for domain logic.
+- \`domain/repositories\`: Repository base for domain logic.
 - \`infrastructure/database/models\`: SQLAlchemy DB models.
 - \`infrastructure/database/schemas\`: Pydantic schemas.
-- \`infrastructure/database/repository\`: DB repository implementations.
+- \`infrastructure/database/repositories\`: DB repository implementations.
 - \`services\`: Business logic/services.
 - \`authentication, authorization, ratelimiting, caching\`: For future scalability/reliability.
 - \`tests\`: Automated tests.
@@ -701,7 +705,7 @@ from sqlalchemy import pool
 from alembic import context
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from app.domain.repository.base import Base
+from app.domain.repositories.base import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -1,43 +1,107 @@
 # FastAPI Scaffold Script
 
-This repository contains a Bash script (`fastapi_scaffold_script.sh`) that automatically scaffolds a production-ready FastAPI project using hexagonal architecture.
+This repository contains two scripts for scaffolding FastAPI projects:
 
-## What the Script Does
+- **fastapi_scaffold_script.sh**
+- **fastapi_scaffold_improvements_script.sh**
 
-- Prompts for your project name and whether to use async or sync SQLAlchemy.
-- Sets up a Python virtual environment using pyenv.
-- Creates a scalable folder structure with core, domain, infrastructure, services, API, and tests.
-- Adds support for Alembic migrations, Docker, and environment variable management.
-- Generates example files for models, schemas, repositories, and endpoints.
-- Includes a comprehensive `.gitignore` and README template.
-- Prepares folders for authentication, authorization, ratelimiting, and caching.
+---
 
-## How to Run
+## Scripts Overview
 
-1. **Install prerequisites:**
-   - [pyenv](https://github.com/pyenv/pyenv)
-   - Python 3.11
-   - Docker (optional, for containerization)
+### 1. `fastapi_scaffold_script.sh`
 
-2. **Clone this repository:**
-   ```bash
-   git clone https://github.com/tossie79/fastapi-scaffold-script.git
-   cd fastapi-scaffold-script
-   ```
+- **Purpose:**  
+  Quickly scaffolds a standard FastAPI project with a recommended structure, including SQLAlchemy, Alembic, Docker, and basic folders for authentication, authorization, ratelimiting, and caching.
+- **Features:**  
+  - Sync/async SQLAlchemy support  
+  - Docker and Docker Compose files  
+  - Alembic migrations  
+  - Example health endpoint  
+  - Pre-filled `.env` and `.env-example`  
+  - Comprehensive `.gitignore`  
+  - Basic README  
+- **When to use:**  
+  Use this script if you want a **quick, standard FastAPI project scaffold** with all the essentials and a clean, extensible structure.
 
-3. **Make the script executable:**
+---
+
+### 2. `fastapi_scaffold_improvements_script.sh`
+
+- **Purpose:**  
+  An improved and more interactive version of the scaffold script. It allows you to **customize** your project scaffold with more options and better automation.
+- **Improvements over the basic script:**  
+  - Interactive prompts for enabling/disabling features (auth, ratelimiting, caching, pre-commit, CI/CD, Makefile, Docker healthcheck, license)
+  - Only creates folders and files for features you select
+  - Optionally adds pre-commit hooks and GitHub Actions workflow
+  - Optionally adds a Makefile for common tasks
+  - Optionally adds a Docker healthcheck
+  - Optionally adds a license file (MIT/Apache-2.0)
+  - More detailed README and documentation
+- **When to use:**  
+  Use this script if you want a **customizable FastAPI scaffold** and want to include/exclude features based on your project needs.
+
+---
+
+## How to Use
+
+### 1. Clone this repository
+
+```bash
+git clone <your-repo-url>
+cd fastapi-scaffold-script
+```
+
+### 2. Run a script
+
+**Make the script executable:**
    ```bash
    chmod +x fastapi_scaffold_script.sh
    ```
+#### For a standard scaffold:
 
-4. **Run the script:**
-   ```bash
-   bash fastapi_scaffold_script.sh
-   ```
+```bash
+bash fastapi_scaffold_script.sh
+```
 
-5. **Follow the prompts to scaffold your FastAPI project.**
+#### For an improved, customizable scaffold:
 
-6. **After scaffolding:**
+```bash
+bash fastapi_scaffold_improvements_script.sh
+```
+
+- Both scripts will prompt you for a project name.
+- The project folder will be created **outside** the `fastapi-scaffold-script` directory (as a sibling folder).
+- Follow the prompts and instructions in the terminal.
+
+---
+
+## Which Script Should I Use?
+
+| Script                                 | Use When...                                                                                   |
+|-----------------------------------------|----------------------------------------------------------------------------------------------|
+| `fastapi_scaffold_script.sh`            | You want a quick, standard FastAPI scaffold with all common features included by default.     |
+| `fastapi_scaffold_improvements_script.sh` | You want to **customize** your scaffold, enabling/disabling features as needed for your project. |
+
+---
+
+## Example
+
+Suppose your folder structure is:
+
+```
+/home/user/dev/fastapi-scaffold-script/
+```
+
+If you run either script from inside `fastapi-scaffold-script`,  
+your new project will be created as a sibling:
+
+```
+/home/user/dev/fastapi-scaffold-script/
+/home/user/dev/my-fastapi-project/
+```
+
+ ##  After scaffolding:
    - Change into your new project folder.
    - Activate the virtual environment:
      ```bash
@@ -49,35 +113,23 @@ This repository contains a Bash script (`fastapi_scaffold_script.sh`) that autom
      ```
    - Copy `.env-example` to `.env` and fill in your environment variables.
 
-7. **Run your FastAPI app locally:**
+ ## Run your FastAPI app locally:
    ```bash
    uvicorn app.main:app --reload
    ```
 
-8. **Or run with Docker:**
+ ## Run with Docker:
    ```bash
    docker-compose up --build
    ```
 
 ---
 
-## Possible Future Improvements
 
-- Interactive options for extra features (authentication, authorization, ratelimiting, caching).
-- Automatic GitHub repo creation using GitHub CLI.
-- Pre-configured CI/CD pipelines (e.g., GitHub Actions).
-- Pre-commit hooks for code quality.
-- Custom license selection.
-- API documentation starter templates.
-- Docker healthcheck.
-- Makefile or task runner for common commands.
-- Optional frontend scaffold for full-stack projects.
-- Enhanced error handling and validation in the script.
-- Template-based file generation for maintainability.
-- Support for multiple database backends.
-- Automatic dependency installation after scaffolding.
-- Customizable project metadata (author, description, version).
 
----
+## Summary
 
-**For more details, see the generated README in your scaffolded project.**
+- Use **`fastapi_scaffold_script.sh`** for a quick, all-in-one scaffold.
+- Use **`fastapi_scaffold_improvements_script.sh`** for a tailored, feature-selectable scaffold.
+
+Both scripts help you start new FastAPI projects with best practices and modern tooling.
